@@ -1,22 +1,18 @@
 import { useEffect, useState } from "react";
 import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
-const EditProfileModal = ({ authUser }) => {
+const EditProfileModal = ({ authUser, refetch }) => {
 	const [formData, setFormData] = useState({
 		fullName: "",
 		username: "",
 		email: "",
 		bio: "",
-		link: "",
+		link: "", // Ensure link defaults to an empty string
 		newPassword: "",
 		currentPassword: "",
 	});
 
 	const { updateProfile, isUpdatingProfile } = useUpdateUserProfile();
-
-	const handleInputChange = (e) => {
-		setFormData({ ...formData, [e.target.name]: e.target.value });
-	};
 
 	useEffect(() => {
 		if (authUser) {
@@ -25,12 +21,24 @@ const EditProfileModal = ({ authUser }) => {
 				username: authUser.username,
 				email: authUser.email,
 				bio: authUser.bio,
-				link: authUser.link,
+				link: authUser.link || "", // Set link to empty string if it's null
 				newPassword: "",
 				currentPassword: "",
 			});
 		}
 	}, [authUser]);
+
+	const handleInputChange = (e) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		// Ensure link is set to null if it's an empty string
+		const updatedData = { ...formData, link: formData.link || null };
+		await updateProfile(updatedData);
+		refetch(); // Refetch the profile data after update
+	};
 
 	return (
 		<>
@@ -43,13 +51,7 @@ const EditProfileModal = ({ authUser }) => {
 			<dialog id='edit_profile_modal' className='modal'>
 				<div className='modal-box border rounded-md border-gray-700 shadow-md'>
 					<h3 className='font-bold text-lg my-3'>Update Profile</h3>
-					<form
-						className='flex flex-col gap-4'
-						onSubmit={(e) => {
-							e.preventDefault();
-							updateProfile(formData);
-						}}
-					>
+					<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
 						<div className='flex flex-wrap gap-2'>
 							<input
 								type='text'
@@ -123,4 +125,5 @@ const EditProfileModal = ({ authUser }) => {
 		</>
 	);
 };
+
 export default EditProfileModal;
