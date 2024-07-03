@@ -1,20 +1,21 @@
-import { FaRegComment } from "react-icons/fa";
+import { FaRegComment, FaRegHeart, FaRegBookmark, FaTrash } from "react-icons/fa";
 import { BiRepost } from "react-icons/bi";
-import { FaRegHeart } from "react-icons/fa";
-import { FaRegBookmark } from "react-icons/fa6";
-import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import LoadingSpinner from './LoadingSpinner';
 import { formatPostDate } from "../../utils/date";
+import { BsEmojiSmileFill } from "react-icons/bs";
+import Picker from '@emoji-mart/react';
+import data from '@emoji-mart/data';
 
 const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
 	const {data:authUser} = useQuery({queryKey: ["authUser"] });
-
 	const queryClient = useQueryClient();
+
+	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
 	const postOwner = post.user;
 	const isLiked = post.likes.includes(authUser._id)
@@ -139,6 +140,11 @@ const Post = ({ post }) => {
 		likePost();
 	};
 
+	const handleEmojiSelect = (emoji) => {
+		setComment((prevComment) => prevComment + emoji.native);
+		setShowEmojiPicker(false);
+	  };
+
 	return (
 		<>
 			<div className='flex gap-2 items-start p-4 border-b border-gray-700'>
@@ -232,6 +238,19 @@ const Post = ({ post }) => {
 											value={comment}
 											onChange={(e) => setComment(e.target.value)}
 										/>
+
+									<BsEmojiSmileFill
+									className='fill-primary w-5 h-5 cursor-pointer'
+									onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+									/>
+
+										{showEmojiPicker && (
+										<div className='absolute z-10'>
+											<Picker data={data} onEmojiSelect={handleEmojiSelect} />
+										</div>
+										)}
+
+
 										<button className='btn btn-primary rounded-full btn-sm text-white px-4'>
 											{isCommenting ? (
 												<LoadingSpinner size='md' />
