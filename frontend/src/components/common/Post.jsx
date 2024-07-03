@@ -87,7 +87,7 @@ const Post = ({ post }) => {
 		},
 
 		onError: (error) => {
-			toast.error(error.message);
+			//toast.error(error.message);
 		}
 
 	})
@@ -113,12 +113,12 @@ const Post = ({ post }) => {
 			}
 		},
 		onSuccess: () => {
-			toast.success("Comment posted successfully");
+			//toast.success("Comment posted successfully");
 			setComment("");
 			queryClient.invalidateQueries({ queryKey: ["posts"] });
 		},
 		onError: (error) => {
-			toast.error(error.message);
+			//toast.error(error.message);
 		},
 	});
 
